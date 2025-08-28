@@ -9,6 +9,7 @@ import {
 	watchLocation,
 	convertCoords,
 	NREPS,
+	getCredentials,
 	reps,
 } from "./pacmacro.js";
 
@@ -47,9 +48,9 @@ window.onload = async () => {
 
 		// fill canvas with map drawing
 		window.pacmacro_ctx.drawImage(
-			window.pacmacro_img_map, 0, 0,
-			window.pacmacro_ctx.canvas.width,
-			window.pacmacro_ctx.canvas.height);
+		        window.pacmacro_img_map, 0, 0,
+		        window.pacmacro_ctx.canvas.width,
+		        window.pacmacro_ctx.canvas.height);
 
 		// render each player
 		Object.keys(window.pacmacro_players).forEach((ID,i) => {
@@ -62,21 +63,29 @@ window.onload = async () => {
 
 			console.log(p);
 
-			switch (p.player.reps) {
-			case 1: // pacman
-				img = window.pacmacro_img_pacman;
-				break;
-			case 2: // antipac
-				img = window.pacmacro_img_anti;
-				break;
-			case 3: // ghost
-				img = window.pacmacro_img_ghost;
-				break;
-			case 4: // edible
-				img = window.pacmacro_img_edible;
-				break;
-			default: // nothing; watcher; error
-				return;
+			if (p.player.type == 1) {
+				if (p.player.reps == 1) {
+					img = window.pacmacro_img_coin;
+				} else {
+					img = window.pacmacro_img_leader;
+				}
+			} else {
+				switch (p.player.reps) {
+				case 1: // pacman
+					img = window.pacmacro_img_pacman;
+					break;
+				case 2: // antipac
+					img = window.pacmacro_img_anti;
+					break;
+				case 3: // ghost
+					img = window.pacmacro_img_ghost;
+					break;
+				case 4: // edible
+					img = window.pacmacro_img_edible;
+					break;
+				default: // nothing; watcher; error
+					return;
+				}
 			}
 
 			window.pacmacro_ctx.drawImage(img,
@@ -117,7 +126,7 @@ window.onload = async () => {
 	};
 
 	let pacmacro_redirect = () => {
-		window.location.href = "/login";
+		// window.location.href = "/login";
 	};
 
 	let pacmacro_recv = (e) => {
@@ -166,17 +175,19 @@ window.onload = async () => {
 
 	const params = new URLSearchParams(window.location.search);
 
-	if (!params.has("id"))
-		pacmacro_redirect();
-	else {
-		let ID = params.get("id");
-		window.pacmacro_ID = ID;
-		pass = window.prompt(`Please enter ${ID}'s password`, "");
+	const { ID, password } = getCredentials();
 
-		connectWS(ID,
-			pacmacro_open, // on open
-			pacmacro_redirect, // on close
-			pacmacro_redirect, // on error
-			pacmacro_recv); // on message
+	if (ID.length == 0 || password.length == 0) {
+		window.location.href = '/register';
+		return;
 	}
+
+	pass = password;
+	window.pacmacro_ID = ID;
+
+	connectWS(ID,
+		pacmacro_open, // on open
+		pacmacro_redirect, // on close
+		pacmacro_redirect, // on error
+		pacmacro_recv); // on message
 }

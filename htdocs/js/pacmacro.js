@@ -2,7 +2,7 @@
 // general programming for all pages
 
 var WS       = "ws"; // change to "wss" in production
-var URL_ROOT = "localhost:8080"; // must be root domain of server hosting API
+var URL_ROOT = "localhost:8000"; // must be root domain of server hosting API
 var EXPAND_X = 32;
 var EXPAND_Y = 32;
 
@@ -59,16 +59,21 @@ function pacmacro_init() {
 	window.pacmacro_img_ghost.src       = "static/game/ghost.png";
 	window.pacmacro_img_edible          = new Image(96, 96);
 	window.pacmacro_img_edible.src      = "static/game/edible.png";
+	window.pacmacro_img_coin            = new Image(96, 96);
+	window.pacmacro_img_coin.src        = "static/game/coin.png";
+	window.pacmacro_img_leader          = new Image(96, 96);
+	window.pacmacro_img_leader.src      = "static/game/leader.png";
 }
 
-// save ID in cookies
-function saveID(ID) {
+// save credentials
+function saveCredentials(ID, password) {
 	document.cookie = `id=${ID}`;
+	document.cookie = `password=${password}`;
 }
 
 // get player ID from cookies
-function getID() {
-	let ID = "";
+function getCredentials() {
+	let ID = "", password = "1234";
 
 	let cookies = document.cookie;
 	cookies = cookies.split(';').map(v => v.split('='));
@@ -76,9 +81,12 @@ function getID() {
 	for (const c of cookies) {
 		if (c[0].trim() == "id")
 			ID = c[1];
+
+		if (c[0].trim() == "password")
+			password = c[1];
 	}
 
-	return ID;
+	return { ID, password };
 }
 
 // connect to websocket as player
@@ -179,8 +187,8 @@ export {
 	EXPAND_X, EXPAND_Y,
 	ribbons,
 	pacmacro_init,
-	saveID,
-	getID,
+	saveCredentials,
+	getCredentials,
 	connectWS,
 	watchLocation,
 	stopWatchLocation,

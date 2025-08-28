@@ -1,7 +1,7 @@
 // register.js
 // programming for the Player Registration page (register.html)
 
-import { URL_ROOT, saveID, ribbons } from "./pacmacro.js";
+import { saveCredentials, ribbons } from "./pacmacro.js";
 
 window.onload = () => {
 	ribbons();
@@ -11,8 +11,8 @@ window.onload = () => {
 	submit_button.onclick = async () => {
 		let type = document.getElementById("register-type").value;
 		let name = document.getElementById("register-name").value;
-		let pass = document.getElementById("register-pass").value;
 		let stat = document.getElementById("register-status");
+		let pass = "1234";
 
 		let form = new FormData;
 		form.append("type", type);
@@ -37,7 +37,7 @@ window.onload = () => {
 		}
 
 		ID = await ID.text();
-		saveID(ID); // save ID in cookies
-		window.location.href = `/?id=${ID}`; // go to index
+		saveCredentials(ID, pass); // save ID in cookies
+		window.location.href = '/'; // go to index
 	};
 }

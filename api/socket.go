@@ -263,4 +263,10 @@ func (s *Sockets) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		s.Move(conn_i, coord)
 	}
+
+	// on disconnect, tell everyone you moved to 0.0, 0.0, so you disappear from the map
+	var coord Coordinate
+	coord.Latitude = 0.0
+	coord.Longitude = 0.0
+	s.Move(conn_i, coord);
 }
